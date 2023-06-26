@@ -1,0 +1,777 @@
+SetSeed(1);
+
+///////////////////////////////////////////////////////////////
+//// Generating random univariate polynomial of degree bounded by d, over a finite field
+///////////////////////////////////////////////////////////////
+// d: Degree of the polynomial
+// A: Polynomial Ring
+///////////////////////////////////////////////////////////////
+function gen_random_poly(d, A)
+    error if (d lt 0), "The degree must be a non-negative integer";
+
+    Fq:=CoefficientRing(A);
+    error if #Fq eq Infinity(), "The polynomial ring must be over a finite field";
+
+    poly:=A!0;
+
+    for i in [1..d] do
+        poly:=poly+Random(Fq)*A.1^(i-1);
+    end for;
+
+    poly:=poly+Random({ a: a in Fq } diff { Zero(Fq) })*A.1^d;
+
+    return poly;
+
+end function;
+
+
+
+
+///////////////////////////////////////////////////////////////
+//// Generating random univariate polynomial of degree d, and with m factor in the polynomial ring A
+///////////////////////////////////////////////////////////////
+// d: Degree of the polynomial
+// A: Polynomial Ring
+///////////////////////////////////////////////////////////////
+function gen_poly_degd_mfactor(d, m, A)
+    Fq:=BaseRing(A);
+
+    part:=Partitions(d,m);
+
+    function seqcount(seq, e)
+        ind:=0;
+        for i in [1..#seq] do
+            if seq[i] eq e then
+                ind:=ind+1;
+            end if;
+        end for;
+        return ind;
+    end function;
+if #Fq lt d then
+    ndeg2poly:=#AllIrreduciblePolynomials(Fq, 2);
+    P:={p: p in part | seqcount(p, 1) le #Fq} diff {p: p in part | seqcount(p, 2) gt ndeg2poly};
+    degpart:=Random(P);
+else
+    degpart:=Random(part);
+end if;
+    seqset:=SetToIndexedSet(SequenceToSet(degpart));
+
+    poly:=A!1;  
+    for i in [1..#seqset] do
+        ind:=seqcount(degpart, seqset[i]);
+        polyset:={@ @};
+        while #polyset ne ind do
+            polyset:=polyset join {@ RandomIrreduciblePolynomial(Fq, seqset[i])@};
+        end while;
+        poly:=poly* &*polyset;
+    end for;
+
+    return poly;
+
+end function;
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+//// Generating a random bivariate polynomial f over the finite field Fq of extension degree n, which can be a defining polynomial of a function field.
+///////////////////////////////////////////////////////////////
+// n: Degree of the defining polynomial
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+// q: prime power
+///////////////////////////////////////////////////////////////
+function gen_def_poly(n, dc, q)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=FiniteField(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:=0;
+
+    while not(IsIrreducible(f)) do
+        f:=0; temp:=0;
+        for i in [1..n] do
+            temp:=0;
+            deg:=Random([0..dc]);
+            for j in [1..deg+1] do
+                temp:=temp+Random(Fq)*A.1^(j-1);
+            end for;
+            f:=f+temp*Ay.1^(i-1);
+        end for;
+
+        f:=f+Ay.1^n;
+    end while;
+
+    try
+        F:=FunctionField(f);
+    catch e
+        f:=$$(n,dc,q);
+    end try;
+
+    return f;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+//// Generating a global function field F over the finite field Fq that no infinite place is ramified
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+///////////////////////////////////////////////////////////////
+function generate_unramified_F(q,n,dc)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in [1..#Coefficients(f)-1]]);
+
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    ram:=&*[RamificationIndex(inf[i]): i in [1..#inf]];
+
+    if ram eq 1 then
+        return F;
+    else
+        for i in [1..#Fq] do
+            g:=A.1+Fq!i-1;
+            zg:=Zeros(F!g);
+            rg:=&*[RamificationIndex(zg[i]): i in [1..#zg]];
+            if rg eq 1 then
+                a:=Fq!i;
+                break;
+            end if;
+        end for;
+
+        if (rg ne 1) then 
+            return $$(q,n,dc);
+        else
+            m:=hom< A -> A | A.1 -> A.1-a>;
+            Cof:=Coefficients(f);
+            Cofx:=[Coefficients(Cof[i]): i in [1..#Cof]];
+
+            for co in [1..#Cofx] do
+                if Cofx[co] eq [] then
+                    Cofx[co]:=[0];
+                end if;
+            end for;
+
+            temp:=Degree(f)*Cf;
+            f2:=Ay.1^(#Cof-1) + &+[ &+ [Cofx[i][j]*m(A.1)^(j-1): j in [1..#Cofx[i]]] *Ay.1^(i-1): i in [1..#Cof-1]];
+
+            Cof2:=Coefficients(f2);
+            Cofx2:=[Coefficients(Cof2[i]): i in [1..#Cof2]];
+    
+            for co in [1..#Cofx2] do
+                if Cofx2[co] eq [] then
+                    Cofx2[co]:=[0];
+                end if;
+            end for;
+
+            Cf2:=Maximum([Ceiling(Degree(Coefficients(f2)[i])/(Degree(f2)+1-i)) : i in [1..#Coefficients(f2)-1]]);
+
+            temp2:=Degree(f2)*Cf2; 
+            f3:=Ay.1^(#Cof2-1) + &+[ &+ [Cofx2[i][j]*A.1^(temp2-(i-1)*Cf2+1-j): j in [1..#Cofx2[i]]] *Ay.1^(i-1): i in [1..#Cof2-1]];
+
+            F3:=FunctionField(f3);
+            inf3:=InfinitePlaces(F3);
+            ram3:=&*[RamificationIndex(inf3[i]): i in [1..#inf3]];
+
+            if ram3 eq 1 then   
+                return F3;
+            else
+                return $$(q,n,dc);
+            end if;
+        end if;
+    end if;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a function field F, some but not all of the infinite places are ramified
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+///////////////////////////////////////////////////////////////
+function generate_part_ramified_F(q,n,dc)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in     [1..#Coefficients(f)-1]]);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    ramseq:=[RamificationIndex(inf[i]): i in [1..#inf]];
+    ram:=&*ramseq;
+
+    if ram eq 1 then
+        return $$(q,n,dc);
+    elif 1 in ramseq then
+        return F;
+    else
+        return $$(q,n,dc);
+    end if;
+
+end function;
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a function field F that has at least 1 degree 1 infinite place
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+///////////////////////////////////////////////////////////////
+function generate_F_with_deg1_inf(q,n,dc)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+
+    f:= gen_def_poly(n,dc,q);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    degseq:=[Degree(inf[i]): i in [1..#inf]];
+
+    if 1 in degseq then
+        return F;
+    else
+        return $$(q,n,dc);
+    end if;
+
+end function;
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a function field F that has at least 1 degree 1 infinite place
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+///////////////////////////////////////////////////////////////
+function generate_F_deg1inf_genusg_classnh(q,n,dc,gbound,h)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+
+    f:= gen_def_poly(n,dc,q);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    degseq:=[Degree(inf[i]): i in [1..#inf]];
+
+    if 1 in degseq then
+        h:=ClassNumber(OF);
+        if h eq 1 then
+            g:=Genus(F);
+            if g eq gbound then
+                return F;
+            else
+                return $$(q,n,dc,g,h);
+            end if;
+        else
+            return $$(q,n,dc,g,h);
+        end if;
+    else
+        return $$(q,n,dc,g,h);
+    end if;
+
+end function;
+
+
+
+
+///////////////////////////////////////////////////////////////
+//// Generating a random OF element in standard representations
+///////////////////////////////////////////////////////////////
+// d: degree bound on the coefficient polynomials
+// F: a global function field
+///////////////////////////////////////////////////////////////
+function gen_random_OF_elt(d,F)
+    error if (d lt 0), "The first input must be a non-negative integer";
+
+    A:=CoefficientRing(F);
+
+    B:=Basis(F);
+    elt:=F!0;
+
+    for i in [1..#B] do
+        di:=Random([1..d]);
+        elt:=elt+gen_random_poly(di,A)*B[i];
+    end for;
+
+    return elt;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a global function field F over the finite field Fq of the unit rank r
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+// r: desired unit rank of F
+///////////////////////////////////////////////////////////////
+function specified_rank_F(q,n,dc,r)
+    error if r ge n, "The rank must be less than the extension degree.";
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in [1..#Coefficients(f)-1]]);
+    F:=FunctionField(f);
+
+    if #InfinitePlaces(F) eq r+1 then
+        return F;
+    else
+        for i in [1..#Fq] do
+            g:=A.1+Fq!i-1;
+            zg:=Zeros(F!g);
+            rg:=&*[RamificationIndex(zg[i]): i in [1..#zg]]; 
+            if #zg eq r+1 then
+                a:=Fq!i;
+                break;
+            end if;
+        end for;
+
+        if not(assigned a) then 
+            return $$(q,n,dc,r);
+        else
+
+            m:=hom< A -> A | A.1 -> A.1-a>;
+            Cof:=Coefficients(f);
+            Cofx:=[Coefficients(Cof[i]): i in [1..#Cof]];
+
+            for co in [1..#Cofx] do
+                if Cofx[co] eq [] then
+                    Cofx[co]:=[0];
+                end if;
+            end for;
+
+            temp:=Degree(f)*Cf;
+            f2:=Ay.1^(#Cof-1) + &+[ &+ [Cofx[i][j]*m(A.1)^(j-1): j in [1..#Cofx[i]]] *Ay.1^(i-1): i in [1..#Cof-1]];
+
+            Cof2:=Coefficients(f2);
+            Cofx2:=[Coefficients(Cof2[i]): i in [1..#Cof2]];
+
+            for co in [1..#Cofx2] do
+                if Cofx2[co] eq [] then
+                    Cofx2[co]:=[0];
+                end if;
+            end for;
+
+            Cf2:=Maximum([Ceiling(Degree(Coefficients(f2)[i])/(Degree(f2)+1-i)) : i in [1..#Coefficients(f2)-1]]);
+
+            temp2:=Degree(f2)*Cf2; 
+            f3:=Ay.1^(#Cof2-1) + &+[ &+ [Cofx2[i][j]*A.1^(temp2-(i-1)*Cf2+1-j): j in [1..#Cofx2[i]]] *Ay.1^(i-1): i in [1..#Cof2-1]];
+
+            F3:=FunctionField(f3);
+            inf3:=InfinitePlaces(F3);
+    
+            if #inf3 eq r+1 then
+                return F3;
+            else
+                return $$(q,n,dc,r);
+            end if;
+        end if;
+    end if;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a global function field F over the finite field Fq, which has only one inert infinite place
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+// r: desired rank of F
+///////////////////////////////////////////////////////////////
+function F_with_inert_inf(q,n,dc)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in [1..#Coefficients(f)-1]]);
+
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    if (#inf eq 1) and (RamificationIndex(inf[1]) eq 1) then
+        return F;
+    else 
+        for i in [1..#Fq] do
+            g:=A.1+Fq!i-1;
+            zg:=Zeros(F!g);
+            rg:=&*[RamificationIndex(zg[i]): i in [1..#zg]]; 
+            if (#zg eq 1) and (RamificationIndex(zg[1]) eq 1) then
+                a:=Fq!i;
+                break;
+            end if;
+        end for;
+
+        if not(assigned a) then 
+            return $$(q,n,dc);
+        else
+
+            m:=hom< A -> A | A.1 -> A.1-a>;
+            Cof:=Coefficients(f);
+            Cofx:=[Coefficients(Cof[i]): i in [1..#Cof]];
+
+            for co in [1..#Cofx] do
+                if Cofx[co] eq [] then
+                    Cofx[co]:=[0];
+                end if;
+            end for;
+
+            temp:=Degree(f)*Cf;
+            f2:=Ay.1^(#Cof-1) + &+[ &+ [Cofx[i][j]*m(A.1)^(j-1): j in [1..#Cofx[i]]] *Ay.1^(i-1): i in [1..#Cof-1]];
+
+            Cof2:=Coefficients(f2);
+            Cofx2:=[Coefficients(Cof2[i]): i in [1..#Cof2]];
+
+            for co in [1..#Cofx2] do
+                if Cofx2[co] eq [] then
+                    Cofx2[co]:=[0];
+                end if;
+            end for;
+
+            Cf2:=Maximum([Ceiling(Degree(Coefficients(f2)[i])/(Degree(f2)+1-i)) : i in [1..#Coefficients(f2)-1]]);
+
+            temp2:=Degree(f2)*Cf2; 
+            f3:=Ay.1^(#Cof2-1) + &+[ &+ [Cofx2[i][j]*A.1^(temp2-(i-1)*Cf2+1-j): j in [1..#Cofx2[i]]] *Ay.1^(i-1): i in [1..#Cof2-1]];
+
+            F3:=FunctionField(f3);
+            inf3:=InfinitePlaces(F3);
+    
+            if (#inf3 eq 1) and (RamificationIndex(inf3[1]) eq 1) then
+                return F3;
+            else
+                return $$(q,n,dc);
+            end if;
+        end if;
+    end if;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a function field F of the given rank and no infinite place is ramified
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+// r: rank of F
+///////////////////////////////////////////////////////////////
+function generate_unramified_F_rank_r(q,n,dc,r)
+    error if r ge n, "rank must be less than the extension degree";
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in [1..#Coefficients(f)-1]]);
+
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    ram:=&*[RamificationIndex(inf[i]): i in [1..#inf]];
+    if (#inf eq r+1) and (ram eq 1) then
+        return F;
+    else 
+        for i in [1..#Fq] do
+            g:=A.1+Fq!i-1;
+            zg:=Zeros(F!g);
+            rg:=&*[RamificationIndex(zg[i]): i in [1..#zg]]; 
+            if (#zg eq r+1) and (rg eq 1) then
+                a:=Fq!i;
+                break;
+            end if;
+        end for;
+
+        if not(assigned a) then 
+            return $$(q,n,dc,r);
+        else
+
+            m:=hom< A -> A | A.1 -> A.1-a>;
+            Cof:=Coefficients(f);
+            Cofx:=[Coefficients(Cof[i]): i in [1..#Cof]];
+
+            for co in [1..#Cofx] do
+                if Cofx[co] eq [] then
+                    Cofx[co]:=[0];
+                end if;
+            end for;
+
+            temp:=Degree(f)*Cf;
+            f2:=Ay.1^(#Cof-1) + &+[ &+ [Cofx[i][j]*m(A.1)^(j-1): j in [1..#Cofx[i]]] *Ay.1^(i-1): i in [1..#Cof-1]];
+
+            Cof2:=Coefficients(f2);
+            Cofx2:=[Coefficients(Cof2[i]): i in [1..#Cof2]];
+
+            for co in [1..#Cofx2] do
+                if Cofx2[co] eq [] then
+                    Cofx2[co]:=[0];
+                end if;
+            end for;
+
+            Cf2:=Maximum([Ceiling(Degree(Coefficients(f2)[i])/(Degree(f2)+1-i)) : i in [1..#Coefficients(f2)-1]]);
+
+            temp2:=Degree(f2)*Cf2; 
+            f3:=Ay.1^(#Cof2-1) + &+[ &+ [Cofx2[i][j]*A.1^(temp2-(i-1)*Cf2+1-j): j in [1..#Cofx2[i]]] *Ay.1^(i-1): i in [1..#Cof2-1]];
+
+            F3:=FunctionField(f3);
+            inf3:=InfinitePlaces(F3);
+            ram3:=&*[RamificationIndex(inf3[i]): i in [1..#inf3]];
+    
+            if (#inf3 eq r+1) and (ram3 eq 1) then
+                return F3;
+            else
+                return $$(q,n,dc,r);
+            end if;
+        end if;
+    end if;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a function field F of the unit rank r, and some but not all of its infinite places is ramified
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+// r: rank of F
+///////////////////////////////////////////////////////////////
+function generate_part_ramified_F_rank_r(q,n,dc,r)
+    error if r eq n-1, "rank cannot be n-1 to be partly ramified";
+    error if r ge n, "rank must be less than the extension degree";
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in [1..#Coefficients(f)-1]]);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    ramseq:=[RamificationIndex(inf[i]): i in [1..#inf]];
+    ram:=&*ramseq;
+
+    if (#inf eq r+1) and (ram ne 1) and (1 in ramseq) then
+        return F;
+    else 
+        for i in [1..#Fq] do
+            g:=A.1+Fq!i-1;
+            zg:=Zeros(F!g);
+            rgseq:=[RamificationIndex(zg[i]): i in [1..#zg]];
+            rg:=&*rgseq;
+            if (#zg eq r+1) and (rg ne 1) and (1 in rgseq) then
+                a:=Fq!i;
+                break;
+            end if;
+        end for;
+
+        if not(assigned a) then 
+            return $$(q,n,dc,r);
+        else
+
+            m:=hom< A -> A | A.1 -> A.1-a>;
+            Cof:=Coefficients(f);
+            Cofx:=[Coefficients(Cof[i]): i in [1..#Cof]];
+
+            for co in [1..#Cofx] do
+                if Cofx[co] eq [] then
+                    Cofx[co]:=[0];
+                end if;
+            end for;
+
+            temp:=Degree(f)*Cf;
+            f2:=Ay.1^(#Cof-1) + &+[ &+ [Cofx[i][j]*m(A.1)^(j-1): j in [1..#Cofx[i]]] *Ay.1^(i-1): i in [1..#Cof-1]];
+
+            Cof2:=Coefficients(f2);
+            Cofx2:=[Coefficients(Cof2[i]): i in [1..#Cof2]];
+
+            for co in [1..#Cofx2] do
+                if Cofx2[co] eq [] then
+                    Cofx2[co]:=[0];
+                end if;
+            end for;
+
+            Cf2:=Maximum([Ceiling(Degree(Coefficients(f2)[i])/(Degree(f2)+1-i)) : i in [1..#Coefficients(f2)-1]]);
+
+            temp2:=Degree(f2)*Cf2; 
+            f3:=Ay.1^(#Cof2-1) + &+[ &+ [Cofx2[i][j]*A.1^(temp2-(i-1)*Cf2+1-j): j in [1..#Cofx2[i]]] *Ay.1^(i-1): i in [1..#Cof2-1]];
+
+            F3:=FunctionField(f3);
+            inf3:=InfinitePlaces(F3);
+            ram3seq:=[RamificationIndex(inf3[i]): i in [1..#inf3]];
+            ram3:=&*ram3seq;
+    
+            if (#inf3 eq r+1) and (ram3 ne 1) and (1 in ram3seq) then
+                return F3;
+            else
+                return $$(q,n,dc,r);
+            end if;
+        end if;
+    end if;
+
+end function;
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+////Generating a function field F with a totally ramified infinite place
+///////////////////////////////////////////////////////////////
+// q: prime power
+// n: extension degree of F
+// dc: degree bound on coefficient polynomials of Ay.1^i for i in [1..n-1]
+///////////////////////////////////////////////////////////////
+function F_total_ram_inf(q,n,dc)
+    error if (n lt 0), "The extension degree must be a non-negative integer";
+    error if (dc lt 0), "The degree bound on coefficient polynomials must be a non-negative integer";
+    error if not(IsPrimePower(q)), "q must be a prime power";
+
+    Fq:=GF(q);
+    A:=PolynomialRing(Fq);
+    Ay:=PolynomialRing(A);
+
+    f:= gen_def_poly(n,dc,q);
+    Cf:=Maximum([Ceiling(Degree(Coefficients(f)[i])/(Degree(f)+1-i)) : i in     [1..#Coefficients(f)-1]]);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    ramseq:=[RamificationIndex(inf[i]): i in [1..#inf]];
+    ram:=&*ramseq;
+
+    if (#inf eq 1) and (ram eq n) then
+        return F;
+    else 
+        for i in [1..#Fq] do
+            g:=A.1+Fq!i-1;
+            zg:=Zeros(F!g);
+            rgseq:=[RamificationIndex(zg[i]): i in [1..#zg]];
+            rg:=&*rgseq;
+            if (#zg eq 1) and (rg eq n) then
+                a:=Fq!i;
+                break;
+            end if;
+        end for;
+
+        if not(assigned a) then 
+            return $$(q,n,dc);
+        else
+
+            m:=hom< A -> A | A.1 -> A.1-a>;
+            Cof:=Coefficients(f);
+            Cofx:=[Coefficients(Cof[i]): i in [1..#Cof]];
+
+            for co in [1..#Cofx] do
+                if Cofx[co] eq [] then
+                    Cofx[co]:=[0];
+                end if;
+            end for;
+
+            temp:=Degree(f)*Cf;
+            f2:=Ay.1^(#Cof-1) + &+[ &+ [Cofx[i][j]*m(A.1)^(j-1): j in [1..#Cofx[i]]] *Ay.1^(i-1): i in [1..#Cof-1]];
+
+            Cof2:=Coefficients(f2);
+            Cofx2:=[Coefficients(Cof2[i]): i in [1..#Cof2]];
+
+            for co in [1..#Cofx2] do
+                if Cofx2[co] eq [] then
+                    Cofx2[co]:=[0];
+                end if;
+            end for;
+
+            Cf2:=Maximum([Ceiling(Degree(Coefficients(f2)[i])/(Degree(f2)+1-i)) : i in [1..#Coefficients(f2)-1]]);
+
+            temp2:=Degree(f2)*Cf2; 
+            f3:=Ay.1^(#Cof2-1) + &+[ &+ [Cofx2[i][j]*A.1^(temp2-(i-1)*Cf2+1-j): j in [1..#Cofx2[i]]] *Ay.1^(i-1): i in [1..#Cof2-1]];
+
+            F3:=FunctionField(f3);
+            inf3:=InfinitePlaces(F3);
+            ram3seq:=[RamificationIndex(inf3[i]): i in [1..#inf3]];
+            ram3:=&*ram3seq;
+    
+            if (#inf3 eq 1) and (ram3 eq n) then
+                return F3;
+            else
+                return $$(q,n,dc);
+            end if;
+        end if;
+    end if;
+
+end function;
+
