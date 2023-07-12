@@ -1,0 +1,72 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the algorithm with the principal ideal testing approach. 
+// g varies, and q, n, deg(c), and the number of distinct factors of c are fixed.
+// c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/g/FFlist_g_small.mag";
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+for g in [1..#FF] do
+
+    dataPrincCR:=[];
+
+for i in [2..5] do
+
+
+    F:=FunctionField(FF[g][i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=g;
+
+    c:=clist[i];
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+
+
+end for;
+
+
+    "When g is ", g;
+    nex:=#dataPrincCR;
+    timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+ 
+    dataPrincCR;
+    "Average: ", timePrincCR;
+
+end for;
+
+
+
+
+
+
+
+

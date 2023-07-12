@@ -1,0 +1,236 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to test a function solving norm equations
+// with the principal ideal approach
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////
+load "testing_gen.mag";
+load "functions.mag";
+
+
+///////////////////////////////////////////////////////////////////////////////
+// TESTING FUNCTION
+// We verify the correctness of the algorithm NE_PrincCR.
+// The testing function RunNE_PrincCRTest returns true if the solution set 
+// sol_PrincCR from NE_PrincCR has the same number of solutions with NE_princ 
+// and each solution in sol_PrincCR is associate to a solution from NE_princ.
+///////////////////////////////////////////////////////////////////////////////
+
+
+function RunNE_PrincCRTest(c, OF);
+    try 
+        sol_PrincCR:=NE_PrincCR(c,OF);
+    catch e
+        e;
+        return false;
+    end try;
+
+    if assigned sol_PrincCR then
+        sol_princ:=NE_princ(c,OF);
+        if #sol_PrincCR eq #sol_princ then
+            for i in [1..#sol_PrincCR] do
+                bool_assoc:=false;
+                elt:=sol_PrincCR[i][1] * &*[1/sol_PrincCR[i][j]^(2^(#sol_PrincCR[i]-j)): j in [2..#sol_PrincCR[i]]];
+
+                for j in [1..#sol_princ] do
+                    bool_assoc:= bool_assoc or IsAssociate(elt,sol_princ[j],OF);
+                end for;
+                if not(bool_assoc) then
+                    return false;
+                end if;
+            end for;
+        else
+            return false;
+        end if;
+
+        return true;
+    end if;
+
+end function;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//GLOBAL TESTING VARIABLES
+///////////////////////////////////////////////////////////////////////////////
+//Field sizes below 10 for auto gen cases
+//Split curves do not exist for FF(2)
+FIELDSIZE:= {3,5};
+ExtensionDeg:= {2,3};
+CoefficientDeg:= {2,3,4,5};
+EltDeg:={1..5};
+DegOfc:={1..2};
+
+
+/////////////////////////////////////////////////////////////////////////////
+//SET THE NUMBER OF REPETITION
+///////////////////////////////////////////////////////////////////////////////
+Rep:=5;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+for q in FIELDSIZE do
+for n in ExtensionDeg do
+for repi in [1..Rep] do
+
+    Fq:= FiniteField(q);
+    A<x>:=PolynomialRing(Fq);
+    Ay<t>:=PolynomialRing(A);
+
+
+    // 1. F with the unit rank = 0 (with the totally ramified infinite place only. otherwise there is no degree 1 infinite place, thus compact representations cannot be computed.
+    F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
+    OF:=MaximalOrderFinite(F);
+
+
+    // 1-1. c is a random irreducible polynomial of degree d (d is not 0)
+    c:=A!IrreduciblePolynomial(Fq, Random(DegOfc));
+
+    assert RunNE_PrincCRTest(c, OF);
+
+
+    // 1-2. c is a random reducible polynomial of degree d (d is not 0)
+    c:=gen_random_poly(Random(DegOfc), A)*gen_random_poly(Random(DegOfc), A);
+
+    assert RunNE_PrincCRTest(c, OF);
+
+
+
+
+
+    // 2. No infinite place is ramified
+
+    F:=generate_unramified_F(q,n,Random(CoefficientDeg));
+    OF:=MaximalOrderFinite(F);
+
+    inf:={@ Places(F)| p: p in InfinitePlaces(F) @};
+
+    if (1 in [Degree(inf[i]): i in [1..#inf]]) then
+
+
+        // 2-1. c is a random irreducible polynomial of degree d (d is not 0)
+        c:=A!IrreduciblePolynomial(Fq, Random(DegOfc));
+
+        assert RunNE_PrincCRTest(c, OF);
+
+
+
+        // 2-2. c is a random reducible polynomial of degree d (d is not 0)
+        c:=gen_random_poly(Random(DegOfc), A)*gen_random_poly(Random(DegOfc), A);
+
+        assert RunNE_PrincCRTest(c, OF);
+
+    end if;
+
+
+    // 3. Random F (skip testing if there is no degree 1 infinite place)
+
+    f:=gen_def_poly(Random(ExtensionDeg), Random(CoefficientDeg), q);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+
+    inf:={@ Places(F)| p: p in InfinitePlaces(F) @};
+
+    if (1 in [Degree(inf[i]): i in [1..#inf]]) then
+
+        // 3-1. c is a random irreducible polynomial of degree d (d is not 0)
+        c:=A!IrreduciblePolynomial(Fq, Random(DegOfc));
+
+        assert RunNE_PrincCRTest(c, OF);
+
+
+
+        // 3-2. c is a random reducible polynomial of degree d (d is not 0)
+        c:=gen_random_poly(Random(DegOfc), A)*gen_random_poly(Random(DegOfc), A);
+
+        assert RunNE_PrincCRTest(c, OF);
+
+    end if;
+
+end for;
+end for;
+end for;
+
+
+
+
+
+
+//Test with pre-selected inputs
+
+Fq:=GF(5);
+A<x>:=PolynomialRing(Fq);
+Ay<t>:=PolynomialRing(A);
+
+
+// 1. F with the unit rank = 0 (with the totally ramified infinite place only. otherwise there is no degree 1 infinite place, thus compact representations cannot be computed.
+f:=t^3 + 2*t^2 + t + 3*x + 1;
+F:=FunctionField(f);
+OF:=MaximalOrderFinite(F);
+
+
+// 1-1. c is a random irreducible polynomial of degree d (d is not 0)
+
+c:= x^2 + 4*x + 2;
+
+assert RunNE_PrincCRTest(c, OF);
+
+
+// 1-2. c is a random reducible polynomial of degree d (d is not 0)
+
+c:= 2*x^3 + 4*x;
+
+assert RunNE_PrincCRTest(c, OF);
+
+
+// 2. No infinite place is ramified
+f:=t^3 + (2*x^2 + 4*x + 1)*t^2 + (3*x^2 + x + 3)*t + x^2 + 4*x + 4;
+F:=FunctionField(f);
+OF:=MaximalOrderFinite(F);
+
+
+// 2-1. c is a random irreducible polynomial of degree d (d is not 0)
+
+c:= x^2 + 4*x + 2;
+
+assert RunNE_PrincCRTest(c, OF);
+
+
+// 2-2. c is a random reducible polynomial of degree d (d is not 0)
+
+c:= x^3 + 3*x^2 + 2*x + 1;
+
+assert RunNE_PrincCRTest(c, OF);
+
+
+
+// 3. Random F (skip testing if there is no degree 1 infinite place)
+f:= t^3 + (3*x^2 + 3*x + 3)*t^2 + (3*x^2 + x + 1)*t + 2*x + 3;
+F:=FunctionField(f);
+OF:=MaximalOrderFinite(F);
+
+
+// 3-1. c is a random irreducible polynomial of degree d (d is not 0)
+
+c:= x+1;
+
+assert RunNE_PrincCRTest(c, OF);
+
+
+// 3-2. c is a random reducible polynomial of degree d (d is not 0)
+
+c:= 2*x^4 + 4*x^3 + 3*x^2 + 3*x + 3;
+
+assert RunNE_PrincCRTest(c, OF);

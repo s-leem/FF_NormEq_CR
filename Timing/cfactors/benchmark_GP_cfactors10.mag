@@ -1,0 +1,73 @@
+
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2022
+//
+// This script is to perform timing test for Gaal-Pohst method.
+// The number of distinct factors of c varies, g, q, n, and deg(c) are fixed.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/cfactors/FFlist_facc_degc10.mag";
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+for j in [1..#FF] do
+
+    dataGP:=[];
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF[3][i]);
+
+    OF:=MaximalOrderFinite(F);
+    inf:=InfinitePlaces(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+
+    c:=clist[j][i];
+
+    // Computing a reduced basis of OF
+    bOF:=ReducedBasis(OMDivisor(F!1));
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append(~dataGP,Cputime(cput));
+
+
+end for;
+
+    nex:=#dataGP;
+    timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+    "When the number of distinct factors of c is ", j;
+    dataGP;
+    "Average: ", timeGP;
+
+end for;
+
+
+
+

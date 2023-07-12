@@ -1,0 +1,76 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for Gaal-Pohst method. 
+// n varies, q, g, and deg(c) are fixed.
+// c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/n/FFlist_n.mag";
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+indset:={@ a: a in [2..#FF] @} diff {@ 3, 6, 9@};
+for j in indset do
+
+    dataGP:=[];
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF[j][i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist[j][i];
+
+
+    // Computing a reduced basis of OF
+    bOF:=ReducedBasis(OMDivisor(F!1));
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append( ~dataGP,Cputime(cput));
+
+
+end for;
+
+    nex:=Rep;
+    timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+    "When n is ", j;
+    dataGP;
+    "Average: ", timeGP;
+
+end for;
+
+
+
+
+
+
+
+

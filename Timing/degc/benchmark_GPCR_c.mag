@@ -1,0 +1,72 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the algoritm that is inspired by Gaal-Pohst, and is using compact representations. 
+// deg(c) varies, q, g, and n are fixed. c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/degc/FFlist_c.mag";
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+for j in [1..#clist] do
+
+    dataGPCR:=[];
+ 
+for i in [1..3] do
+
+
+    F:=FunctionField(FF[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist[j][1];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+
+end for;
+
+    nex:=#dataGPCR;
+    timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+    "When deg(c) is ", j;
+    dataGPCR;
+    "Average: ", timeGPCR;
+
+end for;
+
+
+
+
+
+
+
+

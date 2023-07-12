@@ -1,0 +1,642 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the principal ideal generator approach. 
+// q varies, q, n, and deg(c) fixed. c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/q/FFlist_q.mag";
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////
+////////////    q=3;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(3); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..#FF3] do
+
+
+    F:=FunctionField(FF3[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist3[i];
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 3;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+///////////////////////////////////////////////////////
+////////////    q=5;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(5); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..#FF5] do
+
+
+    F:=FunctionField(FF5[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist5[i];
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 5;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=7;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(7); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+for i in [1..#FF7] do
+
+
+    F:=FunctionField(FF7[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist7[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 7;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=11;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(11); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..#FF11] do
+
+
+    F:=FunctionField(FF11[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist11[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 11;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=13;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(13); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..#FF13] do
+
+
+    F:=FunctionField(FF13[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist13[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 13;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=31;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(31); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..#FF31] do
+
+
+    F:=FunctionField(FF31[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist31[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 31;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=61;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+Fq:=GF(61); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..#FF61] do
+
+
+    F:=FunctionField(FF61[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist61[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 61;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=127;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF127] do
+
+
+    F:=FunctionField(FF127[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist127[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 127;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=251;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF251] do
+
+
+    F:=FunctionField(FF251[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist251[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 251;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=509;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF509] do
+
+
+    F:=FunctionField(FF509[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist509[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 509;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=1021;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF1021] do
+
+
+    F:=FunctionField(FF1021[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist1021[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 1021;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=2039;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF2039] do
+
+
+    F:=FunctionField(FF2039[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist2039[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 2039;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=4093;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF4093] do
+
+
+    F:=FunctionField(FF4093[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist4093[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 4093;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=8191;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF8191] do
+
+
+    F:=FunctionField(FF8191[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist8191[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 8191;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=16381;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF16381] do
+
+
+    F:=FunctionField(FF16381[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist16381[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 16381;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=32749;
+///////////////////////////////////////////////////////
+
+dataPrincCR:=[];
+
+
+for i in [1..#FF32749] do
+
+
+    F:=FunctionField(FF32749[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist32749[i];
+
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataPrincCR;
+timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 32749;
+dataPrincCR;
+"Average: ", timePrincCR;
+
+

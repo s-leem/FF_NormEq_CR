@@ -1,0 +1,80 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the principal ideal generator approach algorithm. 
+// n varies, q, g, and deg(c) are fixed.
+// c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/n/FFlist_n_2_3.mag";
+load "Timing/n/clistn_3.mag";
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+indset:=[];
+
+for i in [1..20] do
+    if FF[i]  ne [] then
+        Append(~indset, i);
+    end if;
+end for;
+"n is in ", indset;
+
+for j in indset do
+
+    dataPrincCR:=[];
+
+for i in [1..#FF[j]] do
+
+
+    F:=FunctionField(FF[j][1]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist[1];
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+
+    nex:=#dataPrincCR;
+    timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+    "When n is ", j;
+    dataPrincCR;
+    "Average: ", timePrincCR;
+
+end for;
+
+
+
+
+
+
+
+

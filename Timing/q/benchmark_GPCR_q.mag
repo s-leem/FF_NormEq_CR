@@ -1,0 +1,621 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the algorithm that is using compact representations and is inspired by Gaal-Pohst method. 
+// q varies, q, n, and deg(c) fixed. c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions_modified_for_benchmarking.mag";
+load "Timing/q/FFlist_q.mag";
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=3;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(3); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF3[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist3[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 3;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=5;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(5); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF5[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist5[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 5;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=7;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(7); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF7[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist7[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 7;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=11;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(11); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF11[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist11[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 11;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=13;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(13); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF13[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist13[i];
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 13;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=31;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(31); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF31[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist31[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 31;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=61;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+Fq:=GF(61); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF61[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist61[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 61;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=127;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF127[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist127[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 127;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=251;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF251[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist251[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 251;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=509;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF509[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist509[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 509;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=1021;
+///////////////////////////////////////////////////////
+
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF1021[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist1021[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 1021;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=2039;
+///////////////////////////////////////////////////////
+
+"------q=2039 .. ";
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF2039[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist2039[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 2039;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=4093;
+///////////////////////////////////////////////////////
+
+"-------q=4093" ;
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF4093[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist4093[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 4093;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=8191;
+///////////////////////////////////////////////////////
+"----------q=8191";
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF8191[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist8191[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 8191;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=16381;
+///////////////////////////////////////////////////////
+"------------q=16381";
+dataGPCR:=[];
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF16381[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=FF16381[i];
+
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGPCR;
+timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+"When q is ", 16381;
+dataGPCR;
+"Average: ", timeGPCR;
+
+
+
+

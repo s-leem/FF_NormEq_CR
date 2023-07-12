@@ -1,0 +1,225 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for Gaal-Pohst method. 
+// q varies, g, n, and deg(c) are fixed.
+// c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions_modified_for_benchmarking.mag";
+load "Timing/q/FFlist_q.mag";
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=3;
+///////////////////////////////////////////////////////
+
+dataGP:=[];
+Fq:=GF(3); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF3[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;     bOF:=ReducedBasis(OMDivisor(F!1));
+
+    c:=clist3[i];
+
+
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append( ~dataGP,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGP;
+timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+"When q is ", 3;
+dataGP;
+"Average: ", timeGP;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=5;
+///////////////////////////////////////////////////////
+
+dataGP:=[];
+Fq:=GF(5); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF5[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;     bOF:=ReducedBasis(OMDivisor(F!1));
+
+    c:=clist5[i];
+
+
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append( ~dataGP,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGP;
+timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+"When q is ", 5;
+dataGP;
+"Average: ", timeGP;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=7;
+///////////////////////////////////////////////////////
+
+dataGP:=[];
+Fq:=GF(7); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF7[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;     bOF:=ReducedBasis(OMDivisor(F!1));
+
+    c:=clist7[i];
+
+
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append( ~dataGP,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGP;
+timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+"When q is ", 7;
+dataGP;
+"Average: ", timeGP;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=11;
+///////////////////////////////////////////////////////
+
+dataGP:=[];
+Fq:=GF(11); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF11[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;     bOF:=ReducedBasis(OMDivisor(F!1));
+
+    c:=clist11[i];
+
+
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append( ~dataGP,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGP;
+timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+"When q is ", 11;
+dataGP;
+"Average: ", timeGP;
+
+
+
+///////////////////////////////////////////////////////
+////////////    q=13;
+///////////////////////////////////////////////////////
+
+dataGP:=[];
+Fq:=GF(13); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+
+for i in [1..Rep] do
+
+
+    F:=FunctionField(FF13[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;     bOF:=ReducedBasis(OMDivisor(F!1));
+
+    c:=clist13[i];
+
+
+
+    cput:=Cputime();
+    GP_sol:=NE_GP(c, bOF);
+    Append( ~dataGP,Cputime(cput));
+
+end for;
+
+
+nex:=#dataGP;
+timeGP:=(&+[dataGP[j]: j in [1..nex]])/nex;
+
+"When q is ", 13;
+dataGP;
+"Average: ", timeGP;
+
+
+

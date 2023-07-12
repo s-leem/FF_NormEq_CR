@@ -1,0 +1,362 @@
+clear;
+
+/////////////////////////////////////////////////////////////////
+//////// Testing: PowCR                                    //////
+/////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to test the correctness of the function power_cr
+// for computing exponentiation of an element in compact representation.
+//
+////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////
+// Load files
+////////////////////////////////////////////////////////////////
+load "testing_gen.mag";
+load "functions.mag";
+
+
+///////////////////////////////////////////////////////////////////////////////
+// TESTING FUNCTION
+// RunPowCRTest returns true if PowCR computes a correct compact representation 
+// of alpha^m when given compact representation of alpha and an integer m.
+///////////////////////////////////////////////////////////////////////////////
+function RunPowCRTest(cr, m)
+    // This function is to test correctness of PowCR with randomly generated inputs
+    try 
+        pcr:=power_cr(cr, m);
+    catch e
+        e;
+        return false;
+    end try;
+
+    if assigned pcr then
+        F:=Universe(cr);
+        nonzeroFq:={ a: a in ConstantField(F) } diff { F!0 };
+
+        alpha:=cr[1] * &*[1/cr[j]^(2^(#cr-j)): j in [2..#cr]];
+        elt:=pcr[1] * &*[1/pcr[j]^(2^(#pcr-j)): j in [2..#pcr]];
+
+        if (alpha^m/elt in nonzeroFq) then
+            return true;
+        else
+            return false;
+        end if;
+    end if;
+
+end function;
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//GLOBAL TESTING VARIABLES
+///////////////////////////////////////////////////////////////////////////////
+//Field sizes below 10 for auto gen cases
+//Split curves do not exist for FF(2)
+FIELDSIZE:= {3,4, 5,7};
+ExtensionDeg:= {2,3,4,5};
+CoefficientDeg:= {2,3,4,5};
+EltDeg:={1..5};
+
+ExpRange:={2..3};
+
+/////////////////////////////////////////////////////////////////////////////
+//SET THE NUMBER OF REPETITION
+/////////////////////////////////////////////////////////////////////////////
+Rep:=3;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+for q in FIELDSIZE do
+for n in ExtensionDeg do
+
+for repi in [1..Rep] do
+
+    // 1. Testing with F over Fq with the one totally ramified infinite place.
+    Fq:=GF(q);
+    nonzeroFq:={a: a in Fq} diff {Fq!0};
+    Aq<x>:=PolynomialRing(Fq);
+    Ay<t>:=PolynomialRing(Aq);
+
+    F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
+    inf:=InfinitePlaces(F);
+    deginf:=[Degree(inf[i]): i in [1..#inf]];
+    OF:=MaximalOrderFinite(F);
+
+    if (1 in deginf) then
+
+        // 1-1. Non-zero constant alpha
+        alpha:=OF!Random(nonzeroFq);
+        A:=alpha*OF;
+        v:=[Valuation(alpha, inf[i]): i in [1..#inf]];
+        cr:=compactrep(A,v,F);
+        m:=Random(ExpRange);
+
+        assert RunPowCRTest(cr, m);
+
+
+
+        //1-2. non-constant polynomial alpha
+        alpha:=OF!gen_random_poly(Random(EltDeg), Aq);
+        A:=alpha*OF;
+        v:=[Valuation(alpha, inf[i]): i in [1..#inf]];
+        cr:=compactrep(A,v,F);
+        m:=Random(ExpRange);
+
+        assert RunPowCRTest(cr, m);
+
+
+
+        // 1-3. Random alpha in F
+        alpha:=gen_random_OF_elt(Random(EltDeg),F);
+        A:=alpha*OF;
+        v:=[Valuation(alpha, inf[i]): i in [1..#inf]];
+        cr:=compactrep(A,v,F);
+        m:=Random(ExpRange);
+
+        assert RunPowCRTest(cr, m);
+
+
+    end if;
+
+
+for r in [1..n-1] do
+
+    Fq:=GF(q);
+    nonzeroFq:={a: a in Fq} diff {Fq!0};
+    Aq<x>:=PolynomialRing(Fq);
+    Ay<t>:=PolynomialRing(Aq);
+
+
+    // 2. Testing with a function field F over Fq of degree n and unit rank r
+    F:=specified_rank_F(q,n,Random(CoefficientDeg),r);
+    OF:=MaximalOrderFinite(F);
+
+    inf:=InfinitePlaces(F);
+    deginf:=[Degree(inf[i]): i in [1..#inf]];
+
+
+    if (1 in deginf) then
+
+        // 2-1. Non-zero constant alpha
+        alpha:=OF!Random(nonzeroFq);
+        A:=alpha*OF;
+        v:=[Valuation(alpha, inf[i]): i in [1..#inf]];
+        cr:=compactrep(A,v,F);
+        m:=Random(ExpRange);
+
+        assert RunPowCRTest(cr, m);
+
+
+
+        //2-2. non-constant polynomial alpha
+        alpha:=OF!gen_random_poly(Random(EltDeg), Aq);
+        A:=alpha*OF;
+        v:=[Valuation(alpha, inf[i]): i in [1..#inf]];
+        cr:=compactrep(A,v,F);
+        m:=Random(ExpRange);
+
+        assert RunPowCRTest(cr, m);
+
+
+
+        // 2-3. Random alpha in F
+        alpha:=gen_random_OF_elt(Random(EltDeg),F);
+        A:=alpha*OF;
+        v:=[Valuation(alpha, inf[i]): i in [1..#inf]];
+        cr:=compactrep(A,v,F);
+        m:=Random(ExpRange);
+
+        assert RunPowCRTest(cr, m);
+
+    end if;
+
+end for; //rank r
+
+end for; //repi
+
+end for;
+end for;
+
+
+
+
+
+
+
+
+////Test with pre-selected inputs
+
+
+// 1. Testing with F over Fq with the one totally ramified infinite place.
+Fq:=GF(5);
+Aq<x>:=PolynomialRing(Fq);
+Ay<t>:=PolynomialRing(Aq);
+
+f:=t^3 + 3*t^2 + 3*t + 4*x + 3;
+F:=FunctionField(f);
+//OF:=MaximalOrderFinite(F);
+
+// 1-1. Non-zero constant alpha
+//alpha = 4
+cr:= [
+    F!1,
+    F!1
+];
+m:= 2;
+
+assert RunPowCRTest(cr, m);
+
+
+
+//1-2. non-constant polynomial alpha
+//alpha= x^5 + 3*x^3 + x^2 + 2*x + 1
+
+cr:= [
+    F!x^5 + 3*x^3 + x^2 + 2*x + 1,
+    1
+];
+m:= 3;
+
+assert RunPowCRTest(cr, m);
+
+
+
+// 1-3. alpha in F
+//alpha= (2*x + 4)*F.1^2 + (2*x + 2)*F.1 + x
+cr:= [
+    (x + 2)*F.1^2 + (x + 1)*F.1 + 3*x,
+    1
+];
+m:= 2;
+
+assert RunPowCRTest(cr, m);
+
+
+
+
+
+// 2. Testing with a function field F over F_5 of degree 3 and unit rank r
+// 2.1 r=1
+f:=t^3 + (4*x + 3)*t^2 + (4*x + 3)*t + 4*x + 3;
+F:=FunctionField(f);
+OF:=MaximalOrderFinite(F);
+
+
+// 2.1-1. Non-zero constant alpha
+//alpha= 3
+cr:= [
+    F!1,
+    F!1
+];
+m:= 3;
+
+assert RunPowCRTest(cr, m);
+
+
+
+// 2.1-2. non-constant polynomial alpha
+//alpha= 4*x^3 + 4*x^2 + 2
+cr:= [
+    (x^7 + 4*x^5 + 3*x^4 + 4*x^3 + 2*x^2 + 1)*F.1^2 + (x^7 + 3*x^5 + 4*x^3 + x^2
+        + 4*x + 2)*F.1 + x^7 + 4*x^6 + 2*x^5 + x^4 + 4*x^3 + 3*x^2 + 2*x + 3,
+    1,
+    F.1^2 + F.1 + 1,
+    1,
+    4*F.1 + x + 3
+];
+m:= 3;
+
+assert RunPowCRTest(cr, m);
+
+
+
+// 2.1-3. alpha in F
+//alpha= (4*x^2 + 2*x + 3)*F.1^2 + (x^4 + 3*x^3 + 2*x^2 + x)*F.1 + 3*x^4 + 4*x^3 + 3*x^2 + x + 2
+cr:= [
+    (4*x^11 + x^10 + x^8 + 2*x^7 + 2*x^6 + x^5 + 4*x^3 + x^2 + 3)*F.1^2 +
+        (4*x^11 + x^10 + x^9 + 3*x^8 + x^6 + 4*x^5 + x^2 + 4*x)*F.1 + 4*x^11 +
+        2*x^10 + x^9 + 2*x^8 + 2*x^7 + x^6 + 3*x^5 + 4*x^3 + 3*x^2 + 4*x + 2,
+    F.1^2 + F.1 + 1,
+    4*F.1 + x + 3,
+    1,
+    1
+];
+m:= 2;
+
+assert RunPowCRTest(cr, m);
+
+
+
+
+// 2.2 r=2
+f:=t^3 + (2*x^2 + x + 3)*t^2 + (3*x^3 + 2*x^2 + 4)*t + 3*x^3 + x^2 + 3*x + 4;
+F:=FunctionField(f);
+
+
+// 2.2-1. Non-zero constant alpha
+//alpha= 3
+cr:= [
+    F!1,
+    F!1
+];
+m:= 3;
+
+assert RunPowCRTest(cr, m);
+
+
+
+//2-2. non-constant polynomial alpha
+//alpha= x^5 + 3*x^4 + x^2 + 2*x + 4
+cr:= [
+    (3*x^15 + 4*x^13 + 4*x^12 + 4*x^10 + 3*x^9 + 3*x^8 + 2*x^7 + x^6 + x^5 + x^4
+        + 3*x^3 + 4*x^2 + 3*x + 2)*F.1^2 + (x^17 + x^16 + 4*x^15 + x^12 + x^10 +
+        3*x^9 + 4*x^8 + 4*x^7 + 2*x^6 + 4*x^5 + 2*x^4 + 2*x^3 + x + 3)*F.1 +
+        x^17 + 3*x^16 + 4*x^15 + 4*x^14 + x^13 + 3*x^10 + 2*x^9 + x^6 + 3*x^5 +
+        3*x^3 + 4*x^2 + 4,
+    1,
+    (x^2 + 4*x + 4)*F.1^2 + (2*x^4 + 3*x^2 + 4*x + 3)*F.1 + 2*x^4 + 4*x^3 +
+        4*x^2 + x + 2,
+    (4*x^3 + x^2 + x)/(x^6 + x^4 + 4*x^3 + 4*x^2 + 2*x + 4)*F.1^2 + (3*x^5 + x^4
+        + 3*x^2 + x + 1)/(x^6 + x^4 + 4*x^3 + 4*x^2 + 2*x + 4)*F.1 + (2*x^6 +
+        3*x^5 + 4*x^4 + 2*x^3 + 3*x^2 + 2*x)/(x^6 + x^4 + 4*x^3 + 4*x^2 + 2*x +
+        4),
+    (3*x + 4)/(x^2 + 4*x + 1)*F.1^2 + (4*x^2 + 2*x)/(x^2 + 4*x + 1)*F.1 + (3*x^3
+        + 4*x^2 + 2*x + 4)/(x^2 + 4*x + 1),
+    (x + 4)/(x^4 + 4*x^3 + 4*x^2)*F.1^2 + (2*x^3 + 3*x^2 + 3*x + 4)/(x^4 + 4*x^3
+        + 4*x^2)*F.1 + (3*x^4 + 3*x^3 + 2*x^2 + x + 3)/(x^4 + 4*x^3 + 4*x^2)
+];
+m:= 3;
+
+assert RunPowCRTest(cr, m);
+
+
+
+// 2-3. alpha in F
+//alpha= (4*x + 1)*F.1^2 + (4*x^3 + 2*x^2 + x + 4)*F.1 + 2*x + 3
+cr:= [
+    (x^12 + x^9 + 4*x^8 + 4*x^5 + x^4 + 3*x^3 + 4*x^2 + 4)*F.1^2 + (2*x^14 +
+        2*x^13 + 2*x^12 + 3*x^10 + x^9 + 3*x^7 + 3*x^6 + 4*x^5 + 2*x^4 + 3*x^3 +
+        3*x^2 + 2)*F.1 + 2*x^14 + x^13 + 2*x^12 + x^11 + 2*x^10 + 2*x^9 + x^8 +
+        2*x^7 + 3*x^5 + 3*x^4 + 4*x^3 + 3*x^2 + 3*x + 3,
+    (x + 4)*F.1^2 + (2*x^3 + 1)*F.1 + 2*x^3 + 4*x^2 + x + 1,
+    (3*x + 3)/(x^5 + x^4 + 4*x^3)*F.1^2 + (4*x^3 + 2*x + 3)/(x^5 + x^4 +
+        4*x^3)*F.1 + (x^4 + 2*x^3 + 4*x + 1)/(x^5 + x^4 + 4*x^3),
+    (x^3 + 3*x^2 + 4)/(x^6 + x^5 + 2*x^4 + 4*x^3 + x^2)*F.1^2 + (4*x^5 + 3*x^4 +
+        3*x^3 + 4*x^2 + 2*x + 4)/(x^6 + x^5 + 2*x^4 + 4*x^3 + x^2)*F.1 + (x^6 +
+        2*x^4 + 2*x^3 + 4*x + 3)/(x^6 + x^5 + 2*x^4 + 4*x^3 + x^2),
+    2/(x^2 + 4*x + 1)*F.1^2 + (4*x^2 + 2*x + 1)/(x^2 + 4*x + 1)*F.1 + (x^3 + 3*x
+        + 4)/(x^2 + 4*x + 1)
+];
+m:= 3;
+
+assert RunPowCRTest(cr, m);
+
+

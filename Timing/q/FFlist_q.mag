@@ -1,0 +1,328 @@
+qset:={@ 3, 5, 7, 11 @} join {@ PreviousPrime(2^i): i in [2..20]@};
+n:=2;
+CoefficientDeg:={2..15};
+gbound:=1;
+degc:=1;
+Nfac:=1;
+
+Rep:=5;
+//seq:= [ FF3, FF5, FF7, FF11, FF13, FF31, FF61, FF127, FF251, FF509, FF1021, FF2039, FF4093, FF8191, FF16381, FF32749, FF65521, FF131071, FF262139, FF524287,  FF1048573 ] ;
+//seqc:=[ clist3, clist5, clist7, clist11, clist13, clist31, clist61, clist127, clist251, clist509, clist1021, clist2039, clist4093, clist8191, clist16381, clist32749, clist65521, clist131071, clist262139, clist524287, clist1048573 ];
+
+Fq:=GF(3); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF3:=
+[Ay|
+    t^2 + 2*x*t + x^3 + x^2 + 2*x + 1,
+    t^2 + (2*x^6 + 2*x^5 + 2*x^2 + x + 1)*t + 2*x^3 + 2,
+    t^2 + (x + 2)*t + 2*x^3 + x^2 + 2*x + 2,
+    t^2 + t + 2*x^4 + 2*x^2 + x,
+    t^2 + (x^2 + 2)*t + x^3 + 2*x^2
+]
+;
+clist3:=
+[CoefficientRing(Ay)|
+    x + 2,
+    x,
+    x + 1,
+    x + 1,
+    x
+]
+;
+
+Fq:=GF(5); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF5:=
+[Ay|
+    t^2 + (x^2 + x + 1)*t + 3*x + 3,
+    t^2 + (3*x^2 + 4*x + 4)*t + 2*x^3 + x^2 + 1,
+    t^2 + (3*x^2 + 4*x + 1)*t + 2*x^3 + 2*x^2 + 4*x,
+    t^2 + (3*x^2 + 3*x)*t + x^3 + 2*x^2 + x + 3,
+    t^2 + (4*x^2 + 2*x)*t + 4*x + 2
+]
+;
+clist5:=
+[CoefficientRing(Ay)|
+    x + 3,
+    x + 3,
+    x + 4,
+    x + 1,
+    x + 4
+]
+;
+
+Fq:=GF(7); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF7:=
+[Ay|
+    t^2 + (5*x^2 + 2*x)*t + 4*x^2 + 6*x + 2,
+    t^2 + (6*x^2 + 5*x)*t + 6*x + 2,
+    t^2 + 4*t + 6*x^4 + 6*x^3 + x^2,
+    t^2 + (x^2 + x + 6)*t + 4*x^2 + 6*x + 1,
+    t^2 + 5*t + 5*x^6 + x^5 + 6*x^4 + 4*x^3 + 6*x^2 + 5*x + 6
+]
+;
+clist7:=
+[CoefficientRing(Ay)|
+    x + 2,
+    x + 2,
+    x + 5,
+    x + 2,
+    x + 6
+]
+;
+
+Fq:=GF(11); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF11:=
+[Ay|
+    t^2 + (9*x^2 + 6)*t + 7*x^2 + 4*x + 6,
+    t^2 + (3*x + 3)*t + 8*x^4 + 5*x^3 + 8*x^2 + 10*x + 3,
+    t^2 + (5*x^2 + 2*x + 5)*t + 7*x^2 + 10*x + 7,
+    t^2 + (6*x^2 + 7*x)*t + 7*x + 9,
+    t^2 + (7*x^2 + 8*x + 2)*t + 4*x^2 + x + 6
+]
+;
+clist11:=
+[CoefficientRing(Ay)|
+    x + 4,
+    x + 3,
+    x + 9,
+    x + 10,
+    x + 8
+]
+;
+
+Fq:=GF(13); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF13:=
+[Ay|
+    t^2 + (3*x^2 + 9*x + 6)*t + 4*x^2 + 6*x + 5,
+    t^2 + (10*x^2 + 5*x + 3)*t + 10*x^3 + 7*x^2 + x + 4,
+    t^2 + (3*x^2 + 3*x + 4)*t + x + 6,
+    t^2 + (10*x^2 + 5*x + 10)*t + 9*x + 2,
+    t^2 + (8*x^2 + x + 11)*t + 4*x^2 + 6*x + 10
+]
+;
+clist13:=
+[CoefficientRing(Ay)|
+    x + 1,
+    x + 3,
+    x + 3,
+    x + 4,
+    x + 11
+]
+;
+
+Fq:=GF(31); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF31:=
+[Ay|
+    t^2 + 27*t + 22*x^4 + 21*x^3 + 23*x^2 + 19*x + 28,
+    t^2 + (29*x^2 + 20*x + 12)*t + 27*x^4 + 16*x^3 + 22*x + 27,
+    t^2 + (6*x^2 + 22*x + 20)*t + 3*x + 30,
+    t^2 + (6*x^2 + 7*x)*t + 13*x^2 + 22,
+    t^2 + (9*x^2 + 30*x + 12)*t + 29*x^3 + 18*x^2 + 20*x + 25
+]
+;
+clist31:=
+[CoefficientRing(Ay)|
+    x + 17,
+    x + 21,
+    x + 20,
+    x + 13,
+    x + 10
+]
+;
+
+Fq:=GF(61); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF61:=
+[Ay|
+    t^2 + (51*x^2 + 9*x + 40)*t + 42*x^2 + 16*x + 2,
+    t^2 + (9*x^2 + 48)*t + 25*x + 12,
+    t^2 + (46*x^2 + 52*x + 27)*t + x^3 + 24*x^2 + 4*x + 8,
+    t^2 + (48*x^2 + 52*x + 5)*t + 58*x + 44,
+    t^2 + (45*x^2 + 36*x + 21)*t + 44*x + 51
+]
+;
+clist61:=
+[CoefficientRing(Ay)|
+    x + 28,
+    x + 44,
+    x + 31,
+    x + 21,
+    x
+]
+;
+
+Fq:=GF(127); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF127:=
+[Ay|
+    t^2 + (64*x + 27)*t + 85*x^4 + 20*x^3 + 35*x^2 + 77*x + 22,
+    t^2 + (79*x^2 + 70*x + 72)*t + 65*x^2 + 28*x + 112,
+    t^2 + (72*x^2 + 88*x + 23)*t + 2*x^2 + 26*x + 85,
+    t^2 + (123*x^2 + 9*x)*t + 69*x^3 + 100*x^2 + 122*x + 100,
+    t^2 + 73*t + 65*x^4 + 78*x^3 + 47*x^2 + 40*x + 45
+]
+;
+clist127:=
+[CoefficientRing(Ay)|
+    x + 81,
+    x + 76,
+    x + 35,
+    x + 112,
+    x + 92
+]
+;
+
+Fq:=GF(251); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF251:=
+[Ay|
+    t^2 + (175*x^2 + 87*x + 142)*t + 23*x^2 + 243*x + 57,
+    t^2 + 49*t + 188*x^4 + 114*x^3 + 119*x^2 + 94*x + 148,
+    t^2 + (106*x^2 + 237*x + 76)*t + 62*x^4 + 221*x^3 + 4*x^2 + 122*x + 113,
+    t^2 + (17*x^2 + 108*x + 227)*t + 206*x^4 + 46*x^3 + 198*x^2 + 29*x + 61,
+    t^2 + (187*x^2 + 118*x + 182)*t + 225*x + 105
+]
+;
+clist251:=
+[CoefficientRing(Ay)|
+    x + 172,
+    x + 220,
+    x + 144,
+    x + 104,
+    x + 249
+]
+;
+
+Fq:=GF(509); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF509:=
+[Ay|
+    t^2 + (11*x^2 + 451*x + 251)*t + 161*x^3 + 93*x^2 + 314*x + 107,
+    t^2 + 7*t + 387*x^4 + 239*x^3 + 32*x^2 + 67*x + 231,
+    t^2 + (489*x^2 + 107*x + 65)*t + 274*x^2 + 299*x + 9,
+    t^2 + (369*x^2 + 133*x + 81)*t + 371*x + 173,
+    t^2 + (446*x^2 + 318*x + 210)*t + 39*x + 463
+]
+;
+clist509:=
+[CoefficientRing(Ay)|
+    x + 326,
+    x + 506,
+    x + 414,
+    x + 252,
+    x + 292
+]
+;
+
+Fq:=GF(1021); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF1021:=
+[Ay|
+    t^2 + (997*x^2 + 781*x + 576)*t + 893*x^4 + 727*x^3 + 483*x^2 + 991*x + 183,
+    t^2 + (236*x^2 + 441*x + 540)*t + 36*x^2 + 470*x + 947,
+    t^2 + (723*x^2 + 89*x + 17)*t + 645*x + 195,
+    t^2 + 467*t + 729*x^4 + 4*x^3 + 696*x^2 + 632*x + 858,
+    t^2 + (693*x^2 + 221*x + 393)*t + 541*x^2 + 79*x + 668
+]
+;
+clist1021:=
+[CoefficientRing(Ay)|
+    x + 769,
+    x + 649,
+    x + 436,
+    x + 789,
+    x + 622
+]
+;
+
+Fq:=GF(2039); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF2039:=
+[Ay|
+    t^2 + (724*x^2 + 366*x + 619)*t + 1730*x^4 + 260*x^3 + 1545*x^2 + 1812*x + 
+        783,
+    t^2 + (1496*x^2 + 1398*x + 1041)*t + 543*x + 1661,
+    t^2 + (1034*x^2 + 1613*x + 679)*t + 561*x + 1104,
+    t^2 + (223*x + 153)*t + 1648*x^4 + 1621*x^3 + 130*x^2 + 526*x + 1153,
+    t^2 + (1631*x^2 + 1225*x + 1779)*t + 27*x^3 + 1880*x^2 + 300*x + 1750
+]
+;
+clist2039:=
+[CoefficientRing(Ay)|
+    x + 1109,
+    x + 1195,
+    x + 841,
+    x + 333,
+    x + 794
+]
+;
+
+Fq:=GF(4093); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF4093:=
+[Ay|
+    t^2 + (1923*x^2 + 2202*x + 4032)*t + 1744*x^2 + 2021*x + 3568,
+    t^2 + (3947*x^2 + 2599*x + 2985)*t + 2069*x^2 + 3425*x + 2354,
+    t^2 + 2773*t + 1920*x^4 + 861*x^3 + 1704*x^2 + 3579*x + 2698,
+    t^2 + (2679*x^2 + 1949*x + 3881)*t + 1137*x + 490,
+    t^2 + (2645*x^2 + 289*x + 2459)*t + 3564*x^2 + 2592*x + 575
+]
+;
+clist4093:=
+[CoefficientRing(Ay)|
+    x + 2437,
+    x + 3140,
+    x + 92,
+    x + 947,
+    x + 2074
+]
+;
+
+Fq:=GF(8191); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+FF8191:=
+[Ay|
+    t^2 + (5873*x^2 + 4401*x + 8178)*t + 7088*x + 8155,
+    t^2 + (2570*x^2 + 353*x + 3096)*t + 7469*x + 5827,
+    t^2 + (4264*x^2 + 6762*x + 2534)*t + 2942*x + 5213,
+    t^2 + (6813*x^2 + 707*x + 6566)*t + 919*x^2 + 6418*x + 2125,
+    t^2 + (4026*x^2 + 4880*x + 4100)*t + 7855*x^3 + 833*x^2 + 1972*x + 8040
+]
+;
+clist8191:=
+[CoefficientRing(Ay)|
+    x + 3734,
+    x + 5923,
+    x + 2206,
+    x + 566,
+    x + 632
+]
+;
+
+Fq:=GF(16381); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+FF16381:=
+[Ay|
+    t^2 + (9589*x^2 + 6255*x + 14073)*t + 433*x^2 + 5179*x + 8482,
+    t^2 + (2288*x^2 + 1380*x + 3267)*t + 556*x^3 + 9049*x^2 + 4821*x + 8451,
+    t^2 + (6583*x^2 + 1766*x + 10318)*t + 7794*x^2 + 9516*x + 7382,
+    t^2 + (16285*x + 10915)*t + 9548*x^4 + 7786*x^3 + 8154*x^2 + 9886*x + 9686,
+    t^2 + (8659*x + 11408)*t + 4600*x^4 + 11220*x^3 + 10475*x^2 + 5644*x + 3975
+]
+;
+clist16381:=
+[CoefficientRing(Ay)|
+    x + 1431,
+    x + 1162,
+    x + 12623,
+    x + 10977,
+    x + 8994
+]
+;
+
+
+
+
+Fq:=GF(32749); A<x>:=PolynomialRing(Fq); Ay<t>:=PolynomialRing(A);
+
+FF32749:=
+[Ay|
+    t^2 + (28834*x^2 + 16668*x + 14063)*t + 21979*x^2 + 24518*x + 14692
+]
+;
+clist32749:=
+[CoefficientRing(Ay)|
+    x + 32554 
+]
+;

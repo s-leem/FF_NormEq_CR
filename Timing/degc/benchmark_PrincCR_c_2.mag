@@ -1,0 +1,69 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the principal ideal generator approach algorithm. 
+// deg(c) varies, q, g, and n are fixed. c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/degc/FFlist_c_2.mag";
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+for j in [1..#clist] do
+
+   dataPrincCR:=[];
+
+for i in [1..5] do
+
+
+    F:=FunctionField(FF[i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist[j][1];
+
+
+    cput:=Cputime();
+    PrincCR_sol:=NE_PrincCR(c, OF);
+    Append( ~dataPrincCR,Cputime(cput));
+
+end for;
+
+    nex:=#dataPrincCR;
+    timePrincCR:=(&+[dataPrincCR[j]: j in [1..nex]])/nex;
+
+    "When deg(c) is a ", j, "-bit integer";
+    dataPrincCR;
+    "Average: ", timePrincCR;
+
+end for;
+
+
+
+
+
+
+
+

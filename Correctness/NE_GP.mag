@@ -1,0 +1,169 @@
+clear;
+
+
+///////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to test a function solving norm equations
+// with the Gaal-Pohst method.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////
+load "testing_gen.mag";
+load "functions.mag";
+
+
+///////////////////////////////////////////////////////////////////////////////
+// TESTING FUNCTION
+// We verify the correctness of the algorithm NE_GP.
+// The testing function RunNE_GPTest returns true if the solution set sol_GP 
+// from NE_GP has the same number of solutions with NE_princ and each solution
+// in sol_GP is associate to a solution from NE_princ.
+///////////////////////////////////////////////////////////////////////////////
+function RunNE_GPTest(c, bOF, OF);
+    try 
+        sol_GP:=NE_GP(c,bOF);
+    catch e
+        e;
+        return false;
+    end try;
+
+    if assigned sol_GP then
+        sol_princ:=NE_princ(c,OF);
+
+        if #sol_GP eq #sol_princ then
+            for i in [1..#sol_GP] do
+                bool_assoc:=false;
+                for j in [1..#sol_princ] do
+                    bool_assoc:= bool_assoc or IsAssociate(sol_GP[i],sol_princ[j],OF);
+                end for;
+                if not(bool_assoc) then
+                    return false;
+                end if;
+            end for;
+        else
+            return false;
+        end if;
+
+        return true;
+    end if;
+
+end function;
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//GLOBAL TESTING VARIABLES
+///////////////////////////////////////////////////////////////////////////////
+//Field sizes below 10 for auto gen cases
+//Split curves do not exist for FF(2)
+FIELDSIZE:= {3,5};
+ExtensionDeg:= {2,3};
+CoefficientDeg:= {2,3,4};
+EltDeg:={1..5};
+DegOfc:={1..2};
+
+/////////////////////////////////////////////////////////////////////////////
+//SET THE NUMBER OF REPETITION
+///////////////////////////////////////////////////////////////////////////////
+Rep:=1;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+FIELDSIZE;
+ExtensionDeg;
+
+for q in FIELDSIZE do
+for n in ExtensionDeg do
+for repi in [1..Rep] do
+
+    Fq:= FiniteField(q);
+    nonzero_Fq:={a: a in Fq} diff {Zero(Fq)};
+
+    f:=gen_def_poly(n, Random(CoefficientDeg), q);
+    F:=FunctionField(f);
+    OF:=MaximalOrderFinite(F);
+    A:=Universe(Coefficients(DefiningPolynomial(F)));
+
+    // Computing a reduced basis of OF
+    bOF:=ReducedBasis(OMDivisor(F!1));
+
+    // 1. c is a non-zero constant (trivial case)
+    c:=Random(nonzero_Fq);
+
+    assert RunNE_GPTest(c, bOF, OF);
+
+
+
+
+    // 2. Random valid inputs
+    // 2-1. c is an irreducible polynomial, not a constant.
+    c:=A!IrreduciblePolynomial(Fq, Random(DegOfc));
+
+    assert RunNE_GPTest(c, bOF, OF);
+
+
+
+    // 2-2. c is a reducible polynomial
+    c:=gen_random_poly(Random(DegOfc), A)*gen_random_poly(Random(DegOfc), A);
+
+    assert RunNE_GPTest(c, bOF, OF);
+
+
+end for;
+end for;
+end for;
+
+
+
+
+/// Test with pre-computed inputs
+
+Fq:=FiniteField(5);
+A<x>:=PolynomialRing(Fq);
+Ay<t>:=PolynomialRing(A);
+
+f:=t^3 + (x + 3)*t^2 + (2*x^2 + 3)*t + 3*x^4 + 2*x^3 + 2*x^2 + 3*x + 2;
+F:=FunctionField(f);
+OF:=MaximalOrderFinite(F);
+
+
+bOF:=[1, F.1, F.1^2];
+
+
+// 1. c is a non-zero constant (trivial case)
+c:=F!2;
+
+assert RunNE_GPTest(c, bOF, OF);
+
+
+
+// 2. Random valid inputs
+// 2-1. c is an irreducible polynomial, not a constant.
+c:=A!x+1;
+
+assert RunNE_GPTest(c, bOF, OF);
+
+
+// 2-2. c is a reducible polynomial
+c:=x^4+4*x^3+3*x+2;
+
+assert RunNE_GPTest(c, bOF, OF);
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+clear;
+
+////////////////////////////////////////////////////////////////////////////////////////
+//////// Testing: Benchmarking                                                  
+////////
+////////////////////////////////////////////////////////////////////////////////////////
+//    Sumin Leem, 2023
+//
+// This script is to perform timing test for the algorithm that is inspired by Gaal-Pohst and is using compact representations. 
+// n varies, q, g, and deg(c) are fixed.
+// c is irreducible.
+//
+///////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////	
+load "testing_gen.mag";
+load "functions.mag";
+load "Timing/n/FFlist_n.mag";
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//START TESTING
+///////////////////////////////////////////////////////////////////////////////
+
+
+indset:={@ a: a in [2..#FF] @} diff {@ 3, 6, 9 @};
+
+for j in indset do
+
+    dataGPCR:=[];
+
+for i in [1..#FF[j]] do
+
+
+    F:=FunctionField(FF[j][i]);
+
+    OF:=MaximalOrderFinite(F);
+
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=gbound;
+
+    c:=clist[j][i];
+
+
+    cput:=Cputime();
+    GPCR_sol:=NE_GPCR(c, OF);
+    Append( ~dataGPCR,Cputime(cput));
+
+
+
+end for;
+
+    nex:=#dataGPCR;
+    timeGPCR:=(&+[dataGPCR[j]: j in [1..nex]])/nex;
+
+    "When n is ", j ;
+    dataGPCR;
+    "Average: ", timeGPCR;
+
+end for;
+
+
+
+
+
+
+
+
