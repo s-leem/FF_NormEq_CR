@@ -1,0 +1,47 @@
+clear;
+
+//////////////////////////////////////////////////
+/////This file is for the examples in the paper submitted to ANTS
+//////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////
+// Load files
+///////////////////////////////////////////////////////////
+//load "testing_gen.mag";
+load "functions.mag";
+
+
+Fq:=GF(5);
+A<x>:=PolynomialRing(Fq);
+Ay<t>:=PolynomialRing(A);
+
+f:=t^3+(4*x^3+3*x^2+1)*t^2+(3*x^3+4*x^2+4*x+2)*t+2*x^3+x;
+F<y>:=FunctionField(f);
+OF:=MaximalOrderFinite(F);
+
+B:=ReducedBasis(OMDivisor(F!1));
+
+c:=F!x+4;
+
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
+
+
+//// 1. Solving the norm equation using Gaal-Pohst  
+cput:=Cputime();
+//// The command below is commented out because Gaal-Pohst takes very long time to be finished. If wished, one may remove // and run the code.
+//GP_sol:=NE_GP(c, bOF);
+"It took ", Cputime(cput), " to solve the norm equation using Gaal-Pohst";
+
+
+//// 2. Solving the norm equation using the improved exhaustive search algorithm
+cput:=Cputime();
+GPCR_sol:=NE_GPCR(c, OF);
+"It took ", Cputime(cput), " to solve the norm equation using the improved exhaustive search algorithm";
+
+//// 3. Solving the norm equation using the index calculus algorithm
+cput:=Cputime();
+PrincCR_sol:=NE_PrincCR(c, OF);
+"It took ", Cputime(cput), " to solve the norm equation using the index calculus algorithm";
+
