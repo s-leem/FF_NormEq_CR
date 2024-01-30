@@ -19,7 +19,8 @@ f:=t^3+(4*x^3+3*x^2+1)*t^2+(3*x^3+4*x^2+4*x+2)*t+2*x^3+x;
 F<y>:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
 
-B:=ReducedBasis(OMDivisor(F!1));
+// Computing a reduced basis of OF
+bOF:=ReducedBasis(OMDivisor(F!1));
 
 c:=F!x+4;
 
