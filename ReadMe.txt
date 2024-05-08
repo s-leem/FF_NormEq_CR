@@ -1,6 +1,6 @@
 Sumin Leem 2023
 
-This repository contains magma files related to solving norm equations over global function fields, and testing scripts.
+This repository contains magma files related to solving norm equations over global function fields, and testing scripts. This is with Magma V2.27-5 or later version.
 
 
 
