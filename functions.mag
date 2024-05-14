@@ -15,6 +15,11 @@ function IsAssociate(elt1, elt2, OF)
     error if not(elt1 in OF) or not(elt2 in OF), "Elements must be in OF";
     error if Type(OF) ne RngFunOrd, "OF must be RngFunOrd";
 
+    if (elt1 eq 0) or (elt2 eq 0) then
+        return false;
+    end if;
+
+
     fac1:=Factorization(elt1*OF); fac2:=Factorization(elt2*OF);
     S:={@ Place(fac1[i][1]): i in [1..#fac1] @} join {@ Place(fac2[i][1]): i in [1..#fac2] @};
 
@@ -428,6 +433,49 @@ end function;
 
 
 
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+///////////// height and size of solution sets            ////////////
+//////////////////////////////////////////////////////////////////////
+///// heightF
+////////////////////////////////////////////////////////////////
+// inputs: an element of a function field F over Fq
+// output: The height of this element
+////////////////////////////////////////////////////////////////
+function EltSizeF(elt)
+    tempsize:=0;
+    seq:=EltToSeq(elt);
+    height:=Maximum([Degree(seq[i]): i in [1..#seq]]);
+
+    return #seq*(height+1);
+end function;
+
+
+////////////////////////////////////////////////////////////////
+///// EltSetSize
+////////////////////////////////////////////////////////////////
+// inputs: a sequence of elements of a function field F over Fq
+// output: The number of Fq elements to represent this element
+////////////////////////////////////////////////////////////////
+function EltSetSize(seq)
+    error if Type(seq) ne SeqEnum, "Input must be a sequence";
+
+    tempsize:=0;
+    for i in [1..#seq] do
+        if Type(seq[i]) eq SeqEnum then 
+            for j in [1..#seq[i]] do
+                tempsize := tempsize + (EltSizeF(seq[i][j]));
+            end for;
+        else
+            tempsize := tempsize + (EltSizeF(seq[i])+1);
+        end if;
+    end for;
+
+    return tempsize;
+end function;
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -587,9 +635,7 @@ function NE_GPCR(c, OF)
     valbounds:=[[Ceiling(-vl[i]-vc[i]), Floor(vl[i]-vc[i])]: i in [1..#vl]];
 
 
-
-
-// input: val vector in the bound, ~R
+// input: val vector in the bound, R
     procedure sol_collecting(temp_v, ind, A, degA, ~R)
         if ind lt #valbounds then
             for i in [valbounds[ind][1]..valbounds[ind][2]] do
@@ -600,7 +646,7 @@ function NE_GPCR(c, OF)
                 inf_vec:=Append(temp_v, i);
                 if (degA+&+[inf_vec[j]*deginf[j]: j in [1..ninf]] eq 0) then
                     cr:=compactrep(A, inf_vec, F);
-                    if norm_cr(cr)/c in Fq then
+                    if (norm_cr(cr)/c in Fq) and (Norm(A)/c in Fq) then
                         bool_assoc:=not(CRinOF(cr, OF));
                             Append(~R,cr);
                         break;
@@ -610,8 +656,6 @@ function NE_GPCR(c, OF)
         end if;        
     end procedure;
 
-
-    R:=[]; 
 
 
     procedure enumerate_V(b, temp, ind, ~R)
@@ -626,7 +670,11 @@ function NE_GPCR(c, OF)
                 if not(IsZero(Vexp)) then
                     A:=&*[Ideal(Sind[i])^Vexp[i]: i in [1..#S0ind]];
                     degA:=&+[degS0ind[i]*Vexp[i]: i in [1..#degS0ind]];
-                    sol_collecting([], 1, A, degA, ~R);
+                    tempR:=[];
+                    sol_collecting([], 1, A, degA, ~tempR);
+                    if tempR ne [] then
+                        Append(~R, tempR[1]);
+                    end if;
                 end if;
             end for;
         end if;
@@ -635,7 +683,7 @@ function NE_GPCR(c, OF)
 
 ///list of possible finite val vector
     b:=[Valuation(F!c, Sind[indFin[i]]): i in [1..#S0ind]];
-    temp:=[]; ind:=1; 
+    temp:=[]; ind:=1; R:=[]; 
     enumerate_V(b, temp, ind, ~R);
 
     return R;
