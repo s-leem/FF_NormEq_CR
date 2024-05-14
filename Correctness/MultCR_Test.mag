@@ -40,8 +40,7 @@ function RunMultCRTest(cr1, cr2, alpha12)
 
         elt:=mcr[1] * &*[1/mcr[j]^(2^(#mcr-j)): j in [2..#mcr]];
 
-
-        if Type(alpha12) eq FldFunElt then
+        if (Type(alpha12) eq FldFunElt) or (Type(alpha12) eq RngFunOrdElt) then
         //// When the last input is an element of F (alpha1*alpha2) in standard representation, we test if mcr represents alpha1*alpha2.
         //// This is for random input test.
             if (alpha12/elt in nonzeroFq) then
@@ -52,7 +51,8 @@ function RunMultCRTest(cr1, cr2, alpha12)
         else
         //// When the last input is a sequence (which is a correct compact representation of alpha1*alpha2), we test if mcr represents the same element with the input sequence.
         //// This is for pre-selected input test.
-            elt12:=alpha12[1] * &*[1/alpha12[j]^(2^(#alpha12-j)): j in [2..#alpha12]];
+"alpha12: ", alpha12;
+            elt12 := alpha12[1] * &*[1/alpha12[j]^(2^(#alpha12-j)): j in [2..#alpha12]];
             if (elt12/elt in nonzeroFq) then
                 return true;
             else
@@ -100,9 +100,15 @@ for repi in [1..Rep] do
     Ay<t>:=PolynomialRing(Aq);
 
     F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
-    inf:=InfinitePlaces(F);
-    deginf:=[Degree(inf[i]): i in [1..#inf]];
     OF:=MaximalOrderFinite(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
+    inf:=F`infplaces;
+    deginf:=[Degree(inf[i]): i in [1..#inf]];
 
     if (1 in deginf) then
 
@@ -179,7 +185,12 @@ for r in [1..n-1] do
     F:=specified_rank_F(q,n,Random(CoefficientDeg),r);
     OF:=MaximalOrderFinite(F);
 
-    inf:=InfinitePlaces(F);
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
+    inf:=F`infplaces;
     deginf:=[Degree(inf[i]): i in [1..#inf]];
 
 
@@ -266,8 +277,13 @@ Ay<t>:=PolynomialRing(Aq);
 
 f:=t^3 + 2*t^2 + t + x + 2;
 F:=FunctionField(f);
-
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
+
 
 // 1-1 Testing with constant alpha1 and alpha2
 //alpha1:=1 alpha2:=2
@@ -321,6 +337,11 @@ assert RunMultCRTest(cr1, cr2, mcr);
 f:=t^3 + (x + 2)*t^2 + (4*x^2 + 3)*t + 4*x + 1;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
 
 
 // 2.1-1 Testing with constant alpha1 and alpha2
@@ -396,6 +417,11 @@ assert RunMultCRTest(cr1, cr2, mcr);
 f:=t^3 + (2*x^2 + 1)*t^2 + (4*x^2 + 4*x + 4)*t + 2*x + 2;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
 
 
 // 2.2-1 Testing with constant alpha1 and alpha2

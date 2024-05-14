@@ -125,7 +125,13 @@ for repi in [1..Rep] do
     //// 1. Testing for a random function field F
     f:= gen_def_poly(Random(ExtensionDeg), Random(CoefficientDeg), q);
     F:=FunctionField(f);
+
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 1-1. S is the set of all infinite places
@@ -162,7 +168,13 @@ for repi in [1..Rep] do
 
     // 2. Testing for a function field F that is inert at infinity.
     F:=F_with_inert_inf(q,Random(ExtensionDeg), Random(CoefficientDeg));
+
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 2-1. S is the set of all infinite places
@@ -199,7 +211,13 @@ for repi in [1..Rep] do
 
     // 3. Testing for a function field F that is totally ramified at infinity.
     F:=F_total_ram_inf(q,Random(ExtensionDeg), Random(CoefficientDeg));
+
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 3-1. S is the set of all infinite places (valid input)
@@ -238,8 +256,13 @@ for repi in [1..Rep] do
     for n in ExtensionDeg do
         for r in [1..n-1] do
             F:=specified_rank_F(q,n,Random(CoefficientDeg),r);
+
+            OF:=MaximalOrderFinite(F);
             inf:=InfinitePlaces(F);
 
+            F`genus:=Genus(F);
+            F`OF:=OF;
+            F`infplaces:=inf;
 
             // 4-1. S is the set of all infinite places (valid input)
             S1:={@ p: p in inf @};
@@ -288,8 +311,13 @@ end for;
     //// 1. Testing for a random function field F
     f:= t^3 + 4*t^2 + (4*x + 3)*t + x^2 + 3*x + 1;
     F:=FunctionField(f);
+
     OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
     // 1-1. S is the set of all infinite places
     S1:={@ p: p in inf @};
@@ -317,8 +345,13 @@ end for;
     // 2. Testing for a function field F that is inert at infinity.
     f:=t^3 + (3*x^2 + x + 1)*t^2 + x^3*t + 2*x^6 + 2*x^5;
     F:=FunctionField(f);
+
     OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 2-1. S is the set of all infinite places
@@ -347,8 +380,13 @@ end for;
     // 3. Testing for a function field F that is totally ramified at infinity.
     f:=t^3 + t^2 + (4*x + 3)*t + 2*x^2 + 1;
     F:=FunctionField(f);
+
     OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 3-1. S is the set of all infinite places
@@ -374,8 +412,13 @@ end for;
     // 4.1 extension degree n =3, rank r=1
     f:=t^3 + (x^2 + x + 1)*t^2 + (4*x^2 + 4*x)*t + x^2 + 4*x + 2;
     F:=FunctionField(f);
+
     OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 4.1-1. S is the set of all infinite places 
@@ -406,8 +449,13 @@ end for;
     // 4.2 extension degree n =3, rank r=2
     f:=t^3 + (x^2 + 3)*t^2 + t + x^2 + 3*x + 4;
     F:=FunctionField(f);
+
     OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
+
+    F`genus:=Genus(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
 
 
     // 4-1. S is the set of all infinite places 

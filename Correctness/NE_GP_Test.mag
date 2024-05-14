@@ -90,6 +90,12 @@ for repi in [1..Rep] do
     f:=gen_def_poly(n, Random(CoefficientDeg), q);
     F:=FunctionField(f);
     OF:=MaximalOrderFinite(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
     A:=Universe(Coefficients(DefiningPolynomial(F)));
 
     // Computing a reduced basis of OF
@@ -133,6 +139,11 @@ Ay<t>:=PolynomialRing(A);
 f:=t^3 + (x + 3)*t^2 + (2*x^2 + 3)*t + 3*x^4 + 2*x^3 + 2*x^2 + 3*x + 2;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
 
 
 bOF:=[1, F.1, F.1^2];

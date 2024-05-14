@@ -94,6 +94,11 @@ for repi in [1..Rep] do
     F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
     OF:=MaximalOrderFinite(F);
 
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
 
     // 1-1. c is a random irreducible polynomial of degree d (d is not 0)
     c:=A!IrreduciblePolynomial(Fq, Random(DegOfc));
@@ -115,7 +120,12 @@ for repi in [1..Rep] do
     F:=generate_unramified_F(q,n,Random(CoefficientDeg));
     OF:=MaximalOrderFinite(F);
 
-    inf:={@ Places(F)| p: p in InfinitePlaces(F) @};
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
+    inf:={@ Places(F)| p: p in F`infplaces @};
 
     if (1 in [Degree(inf[i]): i in [1..#inf]]) then
 
@@ -141,7 +151,12 @@ for repi in [1..Rep] do
     F:=FunctionField(f);
     OF:=MaximalOrderFinite(F);
 
-    inf:={@ Places(F)| p: p in InfinitePlaces(F) @};
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
+    inf:={@ Places(F)| p: p in F`infplaces @};
 
     if (1 in [Degree(inf[i]): i in [1..#inf]]) then
 
@@ -180,6 +195,11 @@ f:=t^3 + 2*t^2 + t + 3*x + 1;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
 
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
+
 
 // 1-1. c is a random irreducible polynomial of degree d (d is not 0)
 
@@ -199,6 +219,11 @@ assert RunNE_PrincCRTest(c, OF);
 f:=t^3 + (2*x^2 + 4*x + 1)*t^2 + (3*x^2 + x + 3)*t + x^2 + 4*x + 4;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
 
 
 // 2-1. c is a random irreducible polynomial of degree d (d is not 0)
@@ -220,6 +245,11 @@ assert RunNE_PrincCRTest(c, OF);
 f:= t^3 + (3*x^2 + 3*x + 3)*t^2 + (3*x^2 + x + 1)*t + 2*x + 3;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
 
 
 // 3-1. c is a random irreducible polynomial of degree d (d is not 0)

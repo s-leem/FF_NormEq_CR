@@ -102,9 +102,14 @@ for repi in [1..Rep] do
     Ay<t>:=PolynomialRing(Aq);
 
     F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
     deginf:=[Degree(inf[i]): i in [1..#inf]];
-    OF:=MaximalOrderFinite(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
+    F`genus:=Genus(F);
 
     if (1 in deginf) then
 
@@ -144,10 +149,14 @@ for r in {1..n-1} do
 //    Ay<t>:=PolynomialRing(Aq);
 
     F:=specified_rank_F(q,n,Random(CoefficientDeg),r);
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
     deginf:=[Degree(inf[i]): i in [1..#inf]];
-//    g:=Genus(F);
-    OF:=MaximalOrderFinite(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=inf;
+    F`genus:=Genus(F);
 
 
     if (1 in deginf) then
@@ -194,8 +203,14 @@ Ay<t>:=PolynomialRing(Aq);
 
 f:= t^3 + 2*t^2 + (x + 1)*t + 4*x^2 + x + 2;
 F<y>:=FunctionField(f);
-inf:=InfinitePlaces(F);
 OF:=MaximalOrderFinite(F);
+inf:=InfinitePlaces(F);
+deginf:=[Degree(inf[i]): i in [1..#inf]];
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=inf;
+F`genus:=Genus(F);
 
 
 // 1-1. Random principal ideal, valuation vector
@@ -233,8 +248,14 @@ Ay<t>:=PolynomialRing(Aq);
 
 f:=t^3 + (2*x^2 + 4*x + 1)*t^2 + (4*x + 3)*t + 2*x + 4;
 F<y>:=FunctionField(f);
-inf:=InfinitePlaces(F);
 OF:=MaximalOrderFinite(F);
+inf:=InfinitePlaces(F);
+deginf:=[Degree(inf[i]): i in [1..#inf]];
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=inf;
+F`genus:=Genus(F);
 
 // 2.1-1. Random principal ideal, valuation vector
 alpha:=(3*x + 4)*y^2 + (2*x + 3)*y + 3*x + 4;
@@ -279,8 +300,14 @@ Ay<t>:=PolynomialRing(Aq);
 
 f:=t^3 + (2*x^2 + 1)*t^2 + (4*x + 4)*t + 2*x^2 + 3*x + 4;
 F<y>:=FunctionField(f);
-inf:=InfinitePlaces(F);
 OF:=MaximalOrderFinite(F);
+inf:=InfinitePlaces(F);
+deginf:=[Degree(inf[i]): i in [1..#inf]];
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=inf;
+F`genus:=Genus(F);
 
 // 2.2-1. Random principal ideal, valuation vector
 alpha:=(x + 3)*y^2 + (3*x + 4)*y + 3*x + 4;

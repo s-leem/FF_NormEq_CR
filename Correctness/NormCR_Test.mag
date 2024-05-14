@@ -82,9 +82,15 @@ for repi in [1..Rep] do
     // 1. Testing with F over Fq with the one totally ramified infinite place.
 
     F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
+
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
     deginf:=[Degree(inf[i]): i in [1..#inf]];
-    OF:=MaximalOrderFinite(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
 
     if (1 in deginf) then
 
@@ -125,10 +131,15 @@ for r in [1..n-1] do
 
     // 2. Testing with a function field F over Fq of degree n and unit rank r
     F:=specified_rank_F(q,n,Random(CoefficientDeg),r);
-    OF:=MaximalOrderFinite(F);
 
+    OF:=MaximalOrderFinite(F);
     inf:=InfinitePlaces(F);
     deginf:=[Degree(inf[i]): i in [1..#inf]];
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
 
 
     if (1 in deginf) then

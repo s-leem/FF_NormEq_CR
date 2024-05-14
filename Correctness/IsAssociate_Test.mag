@@ -76,6 +76,11 @@ for repi in [1..Rep] do
     F:=FunctionField(f);
     OF:=MaximalOrderFinite(F);
 
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
     fund:=FundamentalUnits(OF);
 
     ///// 1. Testing for "True"-expected inputs
@@ -184,6 +189,11 @@ Ay<t>:=PolynomialRing(A);
 f:= t^3 + (2*x + 2)*t^2 + (4*x^2 + 3*x + 4)*t + 4*x^2 + 3*x + 3;
 F:=FunctionField(f);
 OF:=MaximalOrderFinite(F);
+
+F`OFi:=MaximalOrderInfinite(F);
+F`OF:=OF;
+F`infplaces:=InfinitePlaces(F);
+F`genus:=Genus(F);
 
 fund:=FundamentalUnits(OF);
 

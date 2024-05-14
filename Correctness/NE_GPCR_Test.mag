@@ -92,7 +92,6 @@ for n in ExtensionDeg do
 
 
 
-"q = ", q, "  n=", n;
 for repi in [1..Rep] do
 
     Fq:= FiniteField(q);
@@ -105,6 +104,11 @@ for repi in [1..Rep] do
     // 1. F with the unit rank = 0 (with the totally ramified infinite place only. otherwise there is no degree 1 infinite place, thus compact representations cannot be computed.
     F:=F_total_ram_inf(q,n,Random(CoefficientDeg));
     OF:=MaximalOrderFinite(F);
+
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
 
 
     // 1-1. c is a random irreducible polynomial of degree d (d is not 0)
@@ -127,13 +131,19 @@ for repi in [1..Rep] do
     F:=generate_unramified_F(q,n,Random(CoefficientDeg));
     OF:=MaximalOrderFinite(F);
 
-    inf:={@ Places(F)| p: p in InfinitePlaces(F) @};
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
+    inf:={@ Places(F)| p: p in F`infplaces @};
 
     if (1 in [Degree(inf[i]): i in [1..#inf]]) then
 
 
         // 2-1. c is a random irreducible polynomial of degree d (d is not 0)
         c:=A!IrreduciblePolynomial(Fq, Random(DegOfc));
+"2-1", F, c;
 
         assert RunNE_GPCRTest(c, OF);
 
@@ -153,7 +163,12 @@ for repi in [1..Rep] do
     F:=FunctionField(f);
     OF:=MaximalOrderFinite(F);
 
-    inf:={@ Places(F)| p: p in InfinitePlaces(F) @};
+    F`OFi:=MaximalOrderInfinite(F);
+    F`OF:=OF;
+    F`infplaces:=InfinitePlaces(F);
+    F`genus:=Genus(F);
+
+    inf:={@ Places(F)| p: p in F`infplaces @};
 
     if (1 in [Degree(inf[i]): i in [1..#inf]]) then
 
